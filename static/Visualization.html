@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可视化 / Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        main {
+            width: 80%;
+            margin: 20px auto;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 10px 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #007bff;
+        }
+        .scale-name, .section-subtitle {
+            cursor: pointer;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .chart-container {
+            display: none; /* 默认隐藏图表 */
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>可视化页面 / Visualization Page</h1>
+        <nav>
+            <ul>
+                <li><a href="/">主页 / Homepage</a></li>
+                <li><a href="Scales">量表 / Scales</a></li>
+                <li><a href="LLM">大语言模型 / Large Language Models</a></li>
+                <li><a href="Interactive">互动 / Interactive</a></li>
+                <li><a href="Visualization">可视化 / Visualization</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>心理健康量表 / Mental Health Scales</h2>
+            <div>
+
+                <span class="scale-name" onclick="toggleVisibility('hama-chart')">汉密顿焦虑量表 (HAMA)</span>
+                <div id="hama-chart" class="chart-container">
+                    <img id="img-hama" src="" style="display:none;" />
+                    <canvas id="hamaCanvas"></canvas>
+                </div>
+
+                <span class="scale-name" onclick="toggleVisibility('hamd-chart')">汉密顿抑郁量表 (HAMD)</span>
+                <div id="hamd-chart" class="chart-container">
+                    <img id="img-hamd" src="" style="display:none;" />
+                    <canvas id="hamdCanvas"></canvas>
+                </div>
+
+
+
+            </div>
+        </section>
+        <section>
+    <h2>个性与职业性格测试量表 / Personality and Career Scales</h2>
+    <div>
+        <span class="scale-name" onclick="toggleVisibility('mbti-chart')">MBTI</span>
+        <div id="mbti-chart" class="chart-container">
+            <img id="img-one" src="" style="display:none;" />
+            <img id="img-two" src="" style="display:none;" />
+            <img id="img-three" src="" style="display:none;" />
+            <img id="img-four" src="" style="display:none;" />
+            <table id="mbti-table"></table>
+        </div>
+
+
+        <span class="scale-name" onclick="toggleVisibility('bigfive-chart')">大五型人格</span>
+        <div id="bigfive-chart" class="chart-container">
+        <!-- 添加两张图片 -->
+        <img id="bf1" src="" style="display:none;" />
+        <img id="bf2" src="" style="display:none;" />
+    </div>
+
+
+    <!-- 新加入的部分，MBTI 数据与个性得分 -->
+    <div>
+        <h3>MBTI 数据与个性得分</h3>
+        <select id="mbti-type-selector">
+            <option value="ENTJ">ENTJ</option>
+            <option value="ENFJ">ENFJ</option>
+            <option value="ENTP">ENTP</option>
+            <option value="ENFP">ENFP</option>
+            <option value="ESTJ">ESTJ</option>
+            <option value="ESFJ">ESFJ</option>
+            <option value="ESTP">ESTP</option>
+            <option value="ESFP">ESFP</option>
+            <option value="INTJ">INTJ</option>
+            <option value="INFJ">INFJ</option>
+            <option value="INTP">INTP</option>
+            <option value="INFP">INFP</option>
+            <option value="ISTJ">ISTJ</option>
+            <option value="ISFJ">ISFJ</option>
+            <option value="ISTP">ISTP</option>
+            <option value="ISFP">ISFP</option>
+            <!-- 继续添加其他 MBTI 类型选项 -->
+        </select>
+        <button onclick="loadMBTIData()">加载数据</button>
+        <div id="mbti-data-container"></div>
+    </div>
+</section>
+
+
+
+    </main>
+    <footer class="footer-text">
+        <span>如果您有其他建议，请在首页扫描二维码，感谢您的帮助！ / If you have other suggestions, please scan the QR code on the homepage. Thank you for your help!</span>
+    </footer>
+    <script>
+function toggleVisibility(chartId) {
+    var chart = document.getElementById(chartId);
+    if (chart.style.display === 'none') {
+        chart.style.display = 'block';
+
+        // 显示 MBTI 相关图片
+        if (chartId === 'mbti-chart') {
+            document.getElementById('img-one').src = '/static/images/one.png';
+            document.getElementById('img-two').src = '/static/images/two.png';
+            document.getElementById('img-three').src = '/static/images/three.png';
+            document.getElementById('img-four').src = '/static/images/four.png';
+
+            document.getElementById('img-one').style.display = 'block';
+            document.getElementById('img-two').style.display = 'block';
+            document.getElementById('img-three').style.display = 'block';
+            document.getElementById('img-four').style.display = 'block';
+        }
+
+        // 显示 大五型人格 相关图片
+        if (chartId === 'bigfive-chart') {
+            document.getElementById('bf1').src = '/static/images/bf1.png';
+            document.getElementById('bf2').src = '/static/images/bf2.png';
+
+            document.getElementById('bf1').style.display = 'block';
+            document.getElementById('bf2').style.display = 'block';
+        }
+
+        // 控制 汉密顿焦虑量表 图片
+        if (chartId === 'hama-chart') {
+            document.getElementById('img-hama').src = '/static/images/HAMA.png';
+            document.getElementById('img-hama').style.display = 'block';
+        }
+
+        // 控制 汉密顿抑郁量表 图片
+        if (chartId === 'hamd-chart') {
+            document.getElementById('img-hamd').src = '/static/images/HAMD.png';
+            document.getElementById('img-hamd').style.display = 'block';
+        }
+
+
+    } else {
+        chart.style.display = 'none';
+
+        // 隐藏 MBTI 相关图片
+        if (chartId === 'mbti-chart') {
+            document.getElementById('img-one').style.display = 'none';
+            document.getElementById('img-two').style.display = 'none';
+            document.getElementById('img-three').style.display = 'none';
+            document.getElementById('img-four').style.display = 'none';
+        }
+
+        // 隐藏 大五型人格 相关图片
+        if (chartId === 'bigfive-chart') {
+            document.getElementById('bf1').style.display = 'none';
+            document.getElementById('bf2').style.display = 'none';
+        }
+
+        // 隐藏 汉密顿焦虑量表 图片
+        if (chartId === 'hama-chart') {
+            document.getElementById('img-hama').style.display = 'none';
+        }
+
+        // 隐藏 汉密顿抑郁量表 图片
+        if (chartId === 'hamd-chart') {
+            document.getElementById('img-hamd').style.display = 'none';
+        }
+    }
+}
+
+
+
+function loadMBTIData() {
+    var selectedType = document.getElementById('mbti-type-selector').value;
+    fetch(`/get_mbti_data/${selectedType}`)
+    .then(response => response.json())
+    .then(data => {
+        var valuesTable = '<table><caption>基本值</caption>';
+        data.values_data.forEach(row => {
+            valuesTable += '<tr>';
+            row.forEach(cell => {
+                valuesTable += `<td>${cell}</td>`;
+            });
+            valuesTable += '</tr>';
+        });
+        valuesTable += '</table>';
+
+        var scoresTable = '<table><caption>个性得分</caption>';
+        data.scores_data.forEach(row => {
+            scoresTable += '<tr>';
+            row.forEach(cell => {
+                scoresTable += `<td>${cell}</td>`;
+            });
+            scoresTable += '</tr>';
+        });
+        scoresTable += '</table>';
+
+        document.getElementById('mbti-data-container').innerHTML = valuesTable + '<br>' + scoresTable;
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with SparkAI</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const SPARKAI_URL = 'wss://spark-api.xf-yun.com/v3.1/chat';
+        const SPARKAI_APP_ID = '19753d1f';
+        const SPARKAI_API_SECRET = 'ZTQ1YzVlZWE4OTMyNWMzZDE4NTM5MGQw';
+        const SPARKAI_API_KEY = 'd7f2ea35dc77ac94c54b08d5dea11246';
+        const SPARKAI_DOMAIN = 'generalv3';
+
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+
+        let socket = new WebSocket(SPARKAI_URL);
+
+        socket.onopen = function(event) {
+            console.log('Connected to SparkAI');
+        };
+
+        socket.onmessage = function(event) {
+            const response = JSON.parse(event.data);
+            if (response.code === 0) {
+                displayMessage(response.text, 'response');
+            }
+            else {
+                console.error('Error:', response.code, response.message);
+            }
+        };
+
+
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message !== '') {
+                displayMessage(message, 'user');
+                socket.send(JSON.stringify({ app_id: SPARKAI_APP_ID, text: message }));
+                userInput.value = '';
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerText = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
+        }
+    </script>
+</body>
+</html>

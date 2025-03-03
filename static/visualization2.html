@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可视化 / Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        main {
+            width: 80%;
+            margin: 20px auto;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 10px 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #007bff;
+        }
+        .scale-name {
+            cursor: pointer;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .chart-container {
+            display: none; /* 默认隐藏图表 */
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>可视化页面 / Visualization Page</h1>
+        <nav>
+            <ul>
+                <li><a href="/">主页 / Homepage</a></li>
+                <li><a href="Scales">量表 / Scales</a></li>
+                <li><a href="LLM">大语言模型 / Large Language Models</a></li>
+                <li><a href="Interactive">互动 / Interactive</a></li>
+                <li><a href="Visualization">可视化 / Visualization</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>心理健康量表 / Mental Health Scales</h2>
+            <div>
+                <span class="scale-name" onclick="toggleVisibility('hama-chart')">汉密顿焦虑量表 (HAMA)</span>
+                <div id="hama-chart" class="chart-container">
+                    <canvas id="hamaCanvas"></canvas>
+                </div>
+                <span class="scale-name" onclick="toggleVisibility('hamd-chart')">汉密顿抑郁量表 (HAMD)</span>
+                <div id="hamd-chart" class="chart-container">
+                    <canvas id="hamdCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>个性与职业性格测试量表 / Personality and Career Scales</h2>
+            <div>
+                <span class="scale-name" onclick="toggleVisibility('mbti-chart')">MBTI</span>
+                <div id="mbti-chart" class="chart-container">
+                    <!-- 这里显示Excel文件内容 -->
+                    <table id="mbti-table"></table>
+                </div>
+                <span class="scale-name" onclick="toggleVisibility('bigfive-chart')">大五型人格</span>
+                <div id="bigfive-chart" class="chart-container">
+                    <canvas id="bigfiveCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+    <footer class="footer-text">
+        <span>如果您有其他建议，请在首页扫描二维码，感谢您的帮助！ / If you have other suggestions, please scan the QR code on the homepage. Thank you for your help!</span>
+    </footer>
+    <script>
+        function toggleVisibility(chartId) {
+            var chart = document.getElementById(chartId);
+            if (chart.style.display === 'none') {
+                chart.style.display = 'block';
+                if (chartId === 'mbti-chart') {
+                    // 发送请求获取 Excel 文件内容
+                    fetch('/get_mbti_data')
+                    .then(response => response.json())
+                    .then(data => {
+                        var table = '<table>';
+                        data.mbti_data.forEach(row => {
+                            table += '<tr>';
+                            row.forEach(cell => {
+                                table += '<td>' + cell + '</td>';
+                            });
+                            table += '</tr>';
+                        });
+                        table += '</table>';
+                        document.getElementById('mbti-table').innerHTML = table;
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+                // 如果有其他量表需要加载数据，可在这里添加类似的逻辑
+            } else {
+                chart.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
